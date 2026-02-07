@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Girls Bar 料金計算</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        margin: 0;
+        font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif;
+        background: linear-gradient(135deg, #ffb6c1, #d8b4fe);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 28px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 10px;
+        color: #ff4f8b;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .wolf {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    label {
+        display: block;
+        margin-top: 14px;
+        font-size: 14px;
+        color: #444;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px 12px;
+        margin-top: 6px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        font-size: 15px;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #ff7aa2;
+        box-shadow: 0 0 0 2px rgba(255,122,162,0.2);
+    }
+
+    button {
+        width: 100%;
+        margin-top: 22px;
+        padding: 14px;
+        font-size: 16px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #ff5f9e, #b76bff);
+        color: #fff;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    .result {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        background: #fff0f6;
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .note {
+        margin-top: 10px;
+        font-size: 12px;
+        text-align: center;
+        color: #888;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="wolf">
+        <!-- 狼アイコン（SVG） -->
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="#ff5f9e" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 21l9-4 9 4-2-10 3-6-6 2-4-5-4 5-6-2 3 6-2 10z"/>
+        </svg>
+    </div>
+
+    <h1>Girls Bar 会計</h1>
+    <div class="subtitle">かわいく簡単に料金計算♡</div>
+
+    <label>セット料金（1時間あたり・円）</label>
+    <input type="number" id="setPrice" value="3500">
+
+    <label>滞在時間（例：1時間 / 2時間）</label>
+    <input type="text" id="hours" value="1時間">
+
+    <label>キャストドリンク（1000円）杯数</label>
+    <input type="number" id="drink1000" value="0">
+
+    <label>キャストドリンク（2000円）杯数</label>
+    <input type="number" id="drink2000" value="0">
+
+    <label>タックス（%）</label>
+    <input type="number" id="tax" value="30">
+
+    <button onclick="calculate()">計算する</button>
+
+    <div class="result" id="result">
+        合計金額：0 円
+    </div>
+
+    <div class="note">
+        ※ 表示金額は税込みです
+    </div>
+</div>
+
+<script>
+function calculate() {
+    const setPrice = Number(document.getElementById("setPrice").value) || 0;
+    const drink1000 = Number(document.getElementById("drink1000").value) || 0;
+    const drink2000 = Number(document.getElementById("drink2000").value) || 0;
+    const taxPercent = Number(document.getElementById("tax").value) || 0;
+
+    // 「1時間」「2時間」などから数値だけ抜き出す
+    const hoursText = document.getElementById("hours").value;
+    const hoursMatch = hoursText.match(/[\d.]+/);
+    const hours = hoursMatch ? Number(hoursMatch[0]) : 0;
+
+    const base =
+        (setPrice * hours) +
+        (drink1000 * 1000) +
+        (drink2000 * 2000);
+
+    const total = Math.floor(base * (1 + taxPercent / 100));
+
+    document.getElementById("result").textContent =
+        "合計金額：" + total.toLocaleString() + " 円";
+}
+</script>
+
+</body>
+</html>
