@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Girls Bar 料金計算</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif;
+    background: linear-gradient(135deg, #ff9acb, #c7a3ff);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 22px;
+    padding: 26px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.2);
+}
+
+h1 {
+    text-align: center;
+    color: #ff4f8b;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 18px;
+}
+
+.wolf {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+label {
+    display: block;
+    margin-top: 14px;
+    font-size: 14px;
+    color: #444;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #ff7aa2;
+    box-shadow: 0 0 0 2px rgba(255,122,162,0.25);
+}
+
+.counter {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.counter button {
+    width: 44px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    background: #ffe0ec;
+    cursor: pointer;
+}
+
+.counter input {
+    text-align: center;
+    flex: 1;
+}
+
+.tax-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.tax-box span {
+    min-width: 50px;
+    text-align: right;
+    font-weight: bold;
+}
+
+button.calc {
+    margin-top: 22px;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 14px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ff5f9e, #b76bff);
+    cursor: pointer;
+}
+
+button.calc:hover {
+    opacity: 0.9;
+}
+
+.result {
+    margin-top: 18px;
+    background: #fff0f6;
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+
+    <div class="wolf">
+        <!-- 狼アイコン -->
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="#ff5f9e">
+            <path d="M3 21l9-4 9 4-2-10 3-6-6 2-4-5-4 5-6-2 3 6-2 10z"/>
+        </svg>
+    </div>
+
+    <h1>Girls Bar 会計</h1>
+    <div class="subtitle">整数入力だけで簡単計算♡</div>
+
+    <label>セット料金（1時間・円）</label>
+    <input type="number" inputmode="numeric" min="0" step="1" id="setPrice" value="3500">
+
+    <label>滞在時間</label>
+    <select id="hours">
+        <option value="1">1時間</option>
+        <option value="2">2時間</option>
+        <option value="3">3時間</option>
+        <option value="4">4時間</option>
+        <option value="5">5時間</option>
+    </select>
+
+    <label>キャストドリンク（1000円）</label>
+    <div class="counter">
+        <button onclick="changeValue('drink1000', -1)">−</button>
+        <input type="number" min="0" step="1" id="drink1000" value="0" readonly>
+        <button onclick="changeValue('drink1000', 1)">＋</button>
+    </div>
+
+    <label>キャストドリンク（2000円）</label>
+    <div class="counter">
+        <button onclick="changeValue('drink2000', -1)">−</button>
+        <input type="number" min="0" step="1" id="drink2000" value="0" readonly>
+        <button onclick="changeValue('drink2000', 1)">＋</button>
+    </div>
+
+    <label>タックス</label>
+    <div class="tax-box">
+        <input type="range" min="0" max="50" step="1" value="30" id="tax" oninput="updateTax()">
+        <span id="taxValue">30%</span>
+    </div>
+
+    <button class="calc" onclick="calculate()">計算する</button>
+
+    <div class="result" id="result">
+        合計金額：0 円
+    </div>
+
+</div>
+
+<script>
+function changeValue(id, delta) {
+    const el = document.getElementById(id);
+    let value = Number(el.value);
+    value = Math.max(0, value + delta);
+    el.value = value;
+}
+
+function updateTax() {
+    document.getElementById("taxValue").textContent =
+        document.getElementById("tax").value + "%";
+}
+
+function calculate() {
+    const setPrice = Number(document.getElementById("setPrice").value);
+    const hours = Number(document.getElementById("hours").value);
+    const d1000 = Number(document.getElementById("drink1000").value);
+    const d2000 = Number(document.getElementById("drink2000").value);
+    const tax = Number(document.getElementById("tax").value);
+
+    const base =
+        setPrice * hours +
+        d1000 * 1000 +
+        d2000 * 2000;
+
+    const total = Math.floor(base * (1 + tax / 100));
+
+    document.getElementById("result").textContent =
+        "合計金額：" + total.toLocaleString() + " 円";
+}
+</script>
+
+</body>
+</html>
